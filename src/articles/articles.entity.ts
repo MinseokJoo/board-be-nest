@@ -3,7 +3,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,14 +21,12 @@ export class Article {
   @Column('varchar', { length: 1000 })
   contents: string;
 
-  @OneToMany(() => User, (user) => user.id)
-  user_id: User[];
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @Column('int', { default: 0 })
   count: number;
-
-  @Column('varchar', { select: false })
-  password: string;
 
   @CreateDateColumn()
   createdAt: Date;

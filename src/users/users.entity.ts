@@ -1,8 +1,11 @@
+import { Article } from 'src/articles/articles.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,6 +23,9 @@ export class User {
 
   @Column('varchar', { select: false })
   password: string;
+
+  @OneToMany(() => Article, (article) => article.user)
+  articles: Article[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -9,11 +9,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users.entity';
 import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>,
+    private usersRepository: UsersRepository,
     private jwtService: JwtService,
   ) {}
 
@@ -27,7 +29,19 @@ export class UsersService {
       throw new HttpException('This email is already', HttpStatus.BAD_REQUEST);
     }
 
-    await this.usersRepository.create({ name, email, password });
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    const makeUser = await this.usersRepository.insert({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    const payload = { id: makeUser.identifiers[0].id };
+
+    const accessToken = this.jwtService.signAsync(payload);
+
+    return accessToken;
   }
 
   async login(email: string, password: string) {
@@ -35,11 +49,14 @@ export class UsersService {
       where: { email, deletedAt: null },
       select: ['id', 'password'],
     });
+
     if (!user) {
       throw new NotFoundException(`User not found.`);
     }
 
-    if (user.password !== password) {
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordCorrect) {
       throw new UnauthorizedException(`User password is not correct`);
     }
 
@@ -48,5 +65,11 @@ export class UsersService {
     const accessToken = this.jwtService.signAsync(payload);
 
     return accessToken;
+  }
+
+  async myArticles(cookie) {
+    const { id } = await this.jwtService.verify(cookie);
+
+    return await this.usersRepository.userArticles(id);
   }
 }

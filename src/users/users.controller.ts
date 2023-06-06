@@ -1,26 +1,47 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { LoginDto } from './dto/login.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { RegistorDto } from './dto/registor.dto';
 
-@Controller('users')
+@Controller('/api/users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post('signup')
-  async registor(@Body() { email, name, password }: RegistorDto) {
-    return;
+  @Post('/signup')
+  async registor(
+    @Body() { name, email, password, confirm }: RegistorDto,
+    @Res() res,
+  ) {
+    const token = await this.usersService.registor(name, email, password);
+
+    res.cookie('accessToken', token, {
+      httpOnly: true,
+    });
+
+    return res.json(true);
   }
 
   @Post('/login')
-  async login(@Body() { email, password }: LoginDto, @Res() res: Response) {
+  async login(@Body() { email, password }: LoginDto, @Res() res) {
     const token = await this.usersService.login(email, password);
-    res.cookie('Authentication', token, {
-      domain: 'localhost',
-      path: '/',
+
+    res.cookie('accessToken', token, {
       httpOnly: true,
     });
-    return;
+
+    return res.status(200).json(true);
+  }
+
+  @Get('/logout')
+  async logout(@Res() res) {
+    await res.clearCookie('accessToken');
+    return res.status(200).json(true);
+  }
+
+  @Get('/mypage')
+  async myArticles(@Req() req: Request) {
+    const cookie = req.cookies['accessToken'];
+    return await this.usersService.myArticles(cookie);
   }
 }

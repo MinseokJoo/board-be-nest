@@ -16,6 +16,7 @@ export class UsersRepository extends Repository<User> {
       .limit(5)
       .where(id)
       .getMany();
+    console.log(result);
 
     return result;
   }

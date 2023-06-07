@@ -1,4 +1,5 @@
 import { Article } from 'src/articles/articles.entity';
+import { Comment } from 'src/comments/comments.entity';
 import {
   Column,
   CreateDateColumn,
@@ -26,6 +27,9 @@ export class User {
 
   @OneToMany(() => Article, (article) => article.user)
   articles: Article[];
+
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: User;
 
   @CreateDateColumn()
   createdAt: Date;

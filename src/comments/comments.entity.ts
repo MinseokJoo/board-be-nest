@@ -10,31 +10,26 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../users/users.entity';
-import { Comment } from 'src/comments/comments.entity';
+import { Article } from 'src/articles/articles.entity';
 
-@Entity({ schema: 'tagBoard', name: 'articles' })
-export class Article {
+@Entity({ schema: 'tagBoard', name: 'comments' })
+export class Comment {
   @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
   id: number;
-
-  @Column('varchar', { length: 50 })
-  title: string;
 
   @Column('varchar', { length: 1000 })
   contents: string;
 
-  @ManyToOne(() => User, (user) => user.articles)
+  @ManyToOne(() => User)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column('int', { default: 0 })
-  user_id: number;
+  @ManyToOne(() => Article)
+  @JoinColumn({ name: 'article_id' })
+  article: Article;
 
-  @OneToMany(() => Comment, (comment) => comment.id)
-  comment: Comment[];
-
-  @Column('int', { default: 0 })
-  count: number;
+  @Column('int')
+  article_id: number;
 
   @CreateDateColumn()
   createdAt: Date;

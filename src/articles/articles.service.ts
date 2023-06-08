@@ -25,6 +25,17 @@ export class ArticlesService {
     let [rows, count] = await this.articlesRepository.pagingArticles(page);
     count = Number(count);
 
+    const articles = rows.map((row) => {
+      return {
+        id: row.id,
+        title: row.title,
+        contents: row.contents,
+        count: row.count,
+        author: row.user.email,
+        createdAt: row.createdAt,
+      };
+    });
+
     let totalPage = Math.ceil(count / 8);
 
     let pageGroup = Math.ceil(page / 5);
@@ -38,7 +49,7 @@ export class ArticlesService {
     }
 
     return {
-      articles: rows,
+      articles,
       firstPage,
       lastPage,
       totalPage,

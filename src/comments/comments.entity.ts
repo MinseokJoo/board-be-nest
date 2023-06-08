@@ -5,7 +5,6 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -27,6 +26,9 @@ export class Comment {
   @ManyToOne(() => Article)
   @JoinColumn({ name: 'article_id' })
   article: Article;
+
+  @Column('int')
+  user_id: number;
 
   @Column('int')
   article_id: number;

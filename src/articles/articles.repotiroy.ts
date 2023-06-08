@@ -8,12 +8,12 @@ export class ArticlesRepository extends Repository<Article> {
     super(Article, dataSource.createEntityManager());
   }
 
-  async pagingArticles(page) {
+  async pagingArticles(page): Promise<[Article[], number]> {
     const count = await this.count();
 
     const rows = await this.createQueryBuilder('articles')
       .orderBy('articles.createdAt', 'DESC')
-      .limit(page)
+      .leftJoinAndSelect('articles.user', 'users')
       .offset((page - 1) * 8)
       .limit(8)
       .getMany();

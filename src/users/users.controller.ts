@@ -15,9 +15,7 @@ export class UsersController {
   ) {
     const token = await this.usersService.registor(name, email, password);
 
-    res.cookie('accessToken', token, {
-      httpOnly: true,
-    });
+    res.cookie('accessToken', token);
 
     return res.json(true);
   }
@@ -26,9 +24,7 @@ export class UsersController {
   async login(@Body() { email, password }: LoginDto, @Res() res) {
     const token = await this.usersService.login(email, password);
 
-    res.cookie('accessToken', token, {
-      httpOnly: true,
-    });
+    res.cookie('accessToken', token);
 
     return res.status(200).json(true);
   }

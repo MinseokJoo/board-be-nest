@@ -42,17 +42,8 @@ import { UsersRepository } from './users/users.repository';
     ArticlesTagsMappingsModule,
     CommentsModule,
   ],
-  controllers: [
-    AppController,
-    ArticlesTagsMappingsController,
-    CommentsController,
-  ],
-  providers: [
-    AppService,
-    ArticlesTagsMappingsService,
-    CommentsService,
-    AuthMiddleware,
-  ],
+  controllers: [AppController],
+  providers: [AppService, AuthMiddleware],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
@@ -62,6 +53,9 @@ export class AppModule implements NestModule {
         { path: '/api/articles', method: RequestMethod.POST },
         { path: '/api/articles/:id', method: RequestMethod.PUT },
         { path: '/api/articles/:id', method: RequestMethod.DELETE },
+        { path: '/api/comments/:article_id', method: RequestMethod.POST },
+        { path: '/api/comments/:comment_id', method: RequestMethod.PUT },
+        { path: '/api/comments/:comment_id', method: RequestMethod.DELETE },
       );
   }
 }

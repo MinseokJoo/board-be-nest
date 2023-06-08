@@ -32,7 +32,8 @@ export class ArticlesController {
   // 게시글 상세 조회
   @Get('/:id')
   async findOneArticle(@Param('id') id: number) {
-    return await this.articlesService.findOneArticle(id);
+    const data = await this.articlesService.findOneArticle(id);
+    return { data };
   }
 
   // 게시글 작성

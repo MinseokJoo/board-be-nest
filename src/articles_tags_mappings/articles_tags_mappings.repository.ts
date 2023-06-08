@@ -14,4 +14,28 @@ export class Articles_Tags_MappingsRepository extends Repository<Article_Tag_Map
       .innerJoinAndSelect('articles_tags_mappings.tag', 'tag.id')
       .getMany();
   }
+
+  async todayTags(yesterday) {
+    return await this.createQueryBuilder('articles_tags_mappings')
+      .select('tag_id')
+      .groupBy('tag_id')
+      .addSelect('COUNT (*) AS tagsCount')
+      .where(`articles_tags_mappings.createdAt >= ${yesterday}`, {
+        createdAt: yesterday,
+      })
+      .orderBy('tagsCount', 'DESC')
+      .limit(10)
+      .leftJoinAndSelect('articles_tags_mappings.tag', 'tag.id')
+      .getRawMany();
+  }
+
+  async articlesByTag(id, page) {
+    return await this.createQueryBuilder('articles_tags_mappings')
+      .where(id)
+      .leftJoinAndSelect('articles_tags_mappings.article', 'articles')
+      .offset((page - 1) * 8)
+      .limit(8)
+      .orderBy('articles.createdAt', 'DESC')
+      .getMany();
+  }
 }

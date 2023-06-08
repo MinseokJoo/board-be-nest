@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -26,4 +27,7 @@ export class Article_Tag_Mapping {
   @ManyToOne(() => Tag, (tag) => tag.id)
   @JoinColumn({ name: 'tag_id' })
   tag: Tag;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }
